@@ -1,0 +1,169 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0 font-size-18">Create Quotation</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">CRM</a></li>
+                        <li class="breadcrumb-item active">New Quotation</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Quotation Details</h4>
+
+                    <form [formGroup]="quotationForm" (ngSubmit)="onSubmit()">
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Customer <span class="text-danger">*</span></label>
+                                    <ng-select [items]="customers" bindLabel="name" placeholder="Select Customer"
+                                        formControlName="customer"
+                                        [class.is-invalid]="submitted && quotationForm.get('customer')?.invalid">
+                                    </ng-select>
+                                    <div *ngIf="submitted && quotationForm.get('customer')?.errors"
+                                        class="invalid-feedback d-block">
+                                        <span *ngIf="quotationForm.get('customer')?.errors?.['required']">Customer is
+                                            required.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Date <span class="text-danger">*</span></label>
+                                    <div class="input-group clockpicker">
+                                        <input class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker
+                                            #d="ngbDatepicker" formControlName="quotationDate" (click)="d.toggle()">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="submitted && quotationForm.get('quotationDate')?.errors"
+                                        class="invalid-feedback d-block">
+                                        <span *ngIf="quotationForm.get('quotationDate')?.errors?.['required']">Date is
+                                            required.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Expiry Date</label>
+                                    <div class="input-group clockpicker">
+                                        <input class="form-control" placeholder="yyyy-mm-dd" name="dpOpt" ngbDatepicker
+                                            #dOpt="ngbDatepicker" formControlName="expiryDate" (click)="dOpt.toggle()">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive mb-4">
+                            <table class="table table-nowrap align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50px;">#</th>
+                                        <th>Product/Service</th>
+                                        <th style="width: 150px;">Qty</th>
+                                        <th style="width: 150px;">Rate</th>
+                                        <th style="width: 150px;" class="text-end">Total</th>
+                                        <th style="width: 50px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody formArrayName="items">
+                                    <tr *ngFor="let item of items.controls; let i=index" [formGroupName]="i">
+                                        <td>{{i + 1}}</td>
+                                        <td>
+                                            <ng-select [items]="products" bindLabel="name" placeholder="Select Product"
+                                                formControlName="product" (change)="onProductSelect(i)" appendTo="body">
+                                            </ng-select>
+                                            <div *ngIf="submitted && item.get('product')?.invalid"
+                                                class="text-danger font-size-10 mt-1">
+                                                Required
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control" formControlName="quantity"
+                                                (input)="calculateRowTotal(i)" min="1">
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control" formControlName="rate"
+                                                (input)="calculateRowTotal(i)" min="0">
+                                        </td>
+                                        <td class="text-end">
+                                            <span class="fw-bold">{{ item.get('total')?.value | number:'1.2-2' }}</span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)"
+                                                *ngIf="items.length > 1">
+                                                <i class="bx bx-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-success btn-sm mt-2" (click)="addItem()">
+                                <i class="bx bx-plus me-1"></i> Add Item
+                            </button>
+                        </div>
+
+                        <div class="row justify-content-end">
+                            <div class="col-xl-4 col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Notes</label>
+                                    <textarea class="form-control" rows="3" formControlName="notes"
+                                        placeholder="Additional notes..."></textarea>
+                                </div>
+                            </div>
+                            <div class="col-xl-4 col-md-6">
+                                <div class="table-responsive">
+                                    <table class="table table-nowrap mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <th style="width: 50%">Sub Total :</th>
+                                                <td class="text-end">{{ quotationForm.get('subTotal')?.value |
+                                                    number:'1.2-2' }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Tax (5%) :</th>
+                                                <td class="text-end">{{ quotationForm.get('taxAmount')?.value |
+                                                    number:'1.2-2' }}</td>
+                                            </tr>
+                                            <tr class="table-light">
+                                                <th>Grand Total :</th>
+                                                <td class="text-end">
+                                                    <span class="fw-bold h5 mb-0">{{
+                                                        quotationForm.get('grandTotal')?.value | number:'1.2-2'
+                                                        }}</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-secondary me-2">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Quotation</button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

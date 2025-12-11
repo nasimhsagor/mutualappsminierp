@@ -1,0 +1,139 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0 font-size-18">Supplier Master</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Procurement</a></li>
+                        <li class="breadcrumb-item active">Suppliers</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <div class="search-box me-2 mb-2 d-inline-block">
+                                <div class="position-relative">
+                                    <input type="text" class="form-control" placeholder="Search Suppliers...">
+                                    <i class="bx bx-search-alt search-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="text-sm-end">
+                                <button type="button"
+                                    class="btn btn-primary btn-rounded waves-effect waves-light mb-2 me-2"
+                                    (click)="openModal(content)">
+                                    <i class="mdi mdi-plus me-1"></i> New Supplier
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="width: 70px;">#</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Contact Person</th>
+                                    <th scope="col">Phone</th>
+                                    <th scope="col">Balance</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let supplier of suppliers; let i = index">
+                                    <td>{{ i + 1 }}</td>
+                                    <td>
+                                        <h5 class="font-size-14 mb-1"><a href="javascript: void(0);"
+                                                class="text-dark">{{ supplier.name }}</a></h5>
+                                        <small class="text-muted">{{ supplier.email }}</small>
+                                    </td>
+                                    <td>{{ supplier.contactPerson }}</td>
+                                    <td>{{ supplier.phone }}</td>
+                                    <td>{{ supplier.balance | currency }}</td>
+                                    <td>
+                                        <ul class="list-inline font-size-20 contact-links mb-0">
+                                            <li class="list-inline-item px-2">
+                                                <a href="javascript:void(0);" (click)="editSupplier(supplier, content)"
+                                                    title="Edit"><i class="bx bx-pencil text-primary"></i></a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{ isEditMode ? 'Edit Supplier' : 'Add New Supplier' }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="supplierForm">
+            <div class="mb-3">
+                <label class="form-label">Supplier Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="name"
+                    [ngClass]="{ 'is-invalid': submitted && f['name'].errors }">
+                <div *ngIf="submitted && f['name'].errors" class="invalid-feedback">
+                    <div *ngIf="f['name'].errors['required']">Name is required</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Contact Person</label>
+                        <input type="text" class="form-control" formControlName="contactPerson">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Phone <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" formControlName="phone"
+                            [ngClass]="{ 'is-invalid': submitted && f['phone'].errors }">
+                        <div *ngIf="submitted && f['phone'].errors" class="invalid-feedback">
+                            <div *ngIf="f['phone'].errors['required']">Phone is required</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" formControlName="email">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Address</label>
+                <textarea class="form-control" formControlName="address" rows="2"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Opening Balance</label>
+                <input type="number" class="form-control" formControlName="balance">
+            </div>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+        <button type="button" class="btn btn-primary" (click)="onSubmit(modal)">{{ isEditMode ? 'Update' : 'Save'
+            }}</button>
+    </div>
+</ng-template>

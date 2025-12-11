@@ -1,0 +1,110 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0 font-size-18">Supplier Payment</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Procurement</a></li>
+                        <li class="breadcrumb-item active">Payments</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Payment Form -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Record Payment</h4>
+                    <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+
+                        <div class="mb-3">
+                            <label class="form-label">Date <span class="text-danger">*</span></label>
+                            <div class="input-group clockpicker">
+                                <input class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker
+                                    #d="ngbDatepicker" formControlName="paymentDate" (click)="d.toggle()">
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                </div>
+                            </div>
+                            <div *ngIf="submitted && f['paymentDate'].errors" class="invalid-feedback d-block">
+                                <div *ngIf="f['paymentDate'].errors['required']">Date is required</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Supplier <span class="text-danger">*</span></label>
+                            <ng-select [items]="suppliers" bindLabel="name" bindValue="id" formControlName="supplier"
+                                placeholder="Select Supplier"
+                                [class.is-invalid]="submitted && f['supplier'].errors"></ng-select>
+                            <div *ngIf="submitted && f['supplier'].errors" class="invalid-feedback d-block">
+                                <div *ngIf="f['supplier'].errors['required']">Supplier is required</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Amount <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" formControlName="amount"
+                                [ngClass]="{ 'is-invalid': submitted && f['amount'].errors }">
+                            <div *ngIf="submitted && f['amount'].errors" class="invalid-feedback">
+                                <div *ngIf="f['amount'].errors['required']">Amount is required</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Payment Mode <span class="text-danger">*</span></label>
+                            <select class="form-select" formControlName="paymentMode">
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Cash">Cash</option>
+                                <option value="Cheque">Cheque</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Remarks</label>
+                            <textarea class="form-control" formControlName="remarks" rows="2"></textarea>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary w-100">Save Payment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Recent Payments</h4>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Supplier</th>
+                                    <th>Mode</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let p of payments">
+                                    <td>{{ p.date }}</td>
+                                    <td>{{ p.supplier }}</td>
+                                    <td>
+                                        <span class="badge bg-info font-size-12">{{ p.mode }}</span>
+                                    </td>
+                                    <td>{{ p.amount | currency }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

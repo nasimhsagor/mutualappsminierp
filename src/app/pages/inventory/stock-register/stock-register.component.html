@@ -1,0 +1,120 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0 font-size-18">Stock Register</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Inventory</a></li>
+                        <li class="breadcrumb-item active">Stock Entry</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Stock Entry Form -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">New Stock Adjustment</h4>
+                    <form [formGroup]="stockForm" (ngSubmit)="onSubmit()">
+
+                        <div class="mb-3">
+                            <label class="form-label">Transaction Date <span class="text-danger">*</span></label>
+                            <div class="input-group clockpicker">
+                                <input class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker
+                                    #d="ngbDatepicker" formControlName="transactionDate" (click)="d.toggle()">
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
+                                </div>
+                            </div>
+                            <div *ngIf="submitted && f['transactionDate'].errors" class="invalid-feedback d-block">
+                                <div *ngIf="f['transactionDate'].errors['required']">Date is required</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Item <span class="text-danger">*</span></label>
+                            <ng-select [items]="items" bindLabel="name" bindValue="id" formControlName="item"
+                                placeholder="Select Item"
+                                [class.is-invalid]="submitted && f['item'].errors"></ng-select>
+                            <div *ngIf="submitted && f['item'].errors" class="invalid-feedback d-block">
+                                <div *ngIf="f['item'].errors['required']">Item is required</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Type <span class="text-danger">*</span></label>
+                                    <select class="form-select" formControlName="type">
+                                        <option value="In">IN (Add)</option>
+                                        <option value="Out">OUT (Deduct)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Quantity <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" formControlName="quantity"
+                                        [ngClass]="{ 'is-invalid': submitted && f['quantity'].errors }">
+                                    <div *ngIf="submitted && f['quantity'].errors" class="invalid-feedback">
+                                        <div *ngIf="f['quantity'].errors['required']">Required</div>
+                                        <div *ngIf="f['quantity'].errors['min']">Min 1</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Remarks</label>
+                            <textarea class="form-control" formControlName="remarks" rows="2"></textarea>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary w-100">Record Transaction</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Recent Transactions</h4>
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Item</th>
+                                    <th>Type</th>
+                                    <th>Qty</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let t of transactions">
+                                    <td>{{ t.date }}</td>
+                                    <td>{{ t.item }}</td>
+                                    <td>
+                                        <span class="badge font-size-12"
+                                            [ngClass]="{'bg-success': t.type === 'In', 'bg-danger': t.type === 'Out'}">
+                                            {{ t.type }}
+                                        </span>
+                                    </td>
+                                    <td>{{ t.quantity }}</td>
+                                    <td>{{ t.remarks }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

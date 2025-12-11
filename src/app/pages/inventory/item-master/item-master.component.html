@@ -1,0 +1,146 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0 font-size-18">Item Master</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Inventory</a></li>
+                        <li class="breadcrumb-item active">Items</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-4">
+                            <div class="search-box me-2 mb-2 d-inline-block">
+                                <div class="position-relative">
+                                    <input type="text" class="form-control" placeholder="Search Items...">
+                                    <i class="bx bx-search-alt search-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="text-sm-end">
+                                <button type="button"
+                                    class="btn btn-primary btn-rounded waves-effect waves-light mb-2 me-2"
+                                    (click)="openModal(content)">
+                                    <i class="mdi mdi-plus me-1"></i> New Item
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="width: 70px;">#</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">SKU</th>
+                                    <th scope="col">Category</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of items; let i = index">
+                                    <td>{{ i + 1 }}</td>
+                                    <td>
+                                        <h5 class="font-size-14 mb-1"><a href="javascript: void(0);"
+                                                class="text-dark">{{ item.name }}</a></h5>
+                                    </td>
+                                    <td>{{ item.sku }}</td>
+                                    <td>{{ item.category }}</td>
+                                    <td>{{ item.price | currency }}</td>
+                                    <td>{{ item.unit }}</td>
+                                    <td>
+                                        <ul class="list-inline font-size-20 contact-links mb-0">
+                                            <li class="list-inline-item px-2">
+                                                <a href="javascript:void(0);" (click)="editItem(item, content)"
+                                                    title="Edit"><i class="bx bx-pencil text-primary"></i></a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">{{ isEditMode ? 'Edit Item' : 'Add New Item' }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="itemForm">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Item Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" formControlName="name"
+                            [ngClass]="{ 'is-invalid': submitted && f['name'].errors }" placeholder="Enter name">
+                        <div *ngIf="submitted && f['name'].errors" class="invalid-feedback">
+                            <div *ngIf="f['name'].errors['required']">Name is required</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">SKU <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" formControlName="sku"
+                            [ngClass]="{ 'is-invalid': submitted && f['sku'].errors }" placeholder="Enter SKU">
+                        <div *ngIf="submitted && f['sku'].errors" class="invalid-feedback">
+                            <div *ngIf="f['sku'].errors['required']">SKU is required</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Category <span class="text-danger">*</span></label>
+                        <ng-select [items]="categories" formControlName="category" placeholder="Select Category"
+                            [class.is-invalid]="submitted && f['category'].errors"></ng-select>
+                        <div *ngIf="submitted && f['category'].errors" class="invalid-feedback d-block">
+                            <div *ngIf="f['category'].errors['required']">Category is required</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Unit <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" formControlName="unit" placeholder="e.g. pcs, kg">
+                        <div *ngIf="submitted && f['unit'].errors" class="invalid-feedback">
+                            <div *ngIf="f['unit'].errors['required']">Unit is required</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Sale Price</label>
+                <input type="number" class="form-control" formControlName="price" placeholder="0.00">
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+        <button type="button" class="btn btn-primary" (click)="onSubmit(modal)">{{ isEditMode ? 'Update' : 'Save'
+            }}</button>
+    </div>
+</ng-template>
